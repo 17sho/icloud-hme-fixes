@@ -101,7 +101,7 @@ Reads your browser's **already-logged-in iCloud session httpOnly cookies** via t
 auto-renews** (cookie updated); **a new email auto-adds**. No server-side Apple forced-login /
 2FA handling — the easiest renewal path.
 
-Source lives in `extension/` (MV3):
+📥 **Download the zip**: [`dist/icloud-hme-extension.zip`](https://raw.githubusercontent.com/17sho/icloud-hme-fixes/main/dist/icloud-hme-extension.zip) (unzip to get the source). Or browse the `extension/` dir (MV3):
 
 1. Open `chrome://extensions` → enable **Developer mode** (top-right)
 2. Click **"Load unpacked"** → select the `extension/` directory

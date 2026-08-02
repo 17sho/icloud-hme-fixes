@@ -94,7 +94,7 @@ python web_ui.py --scheduler    # 启动时自动开启调度器
 
 通过 `chrome.cookies` API 读取浏览器里**已登录 iCloud 会话的 httpOnly cookie** 并同步到面板：**面板已有相同邮箱账号 → 自动续期**（更新 Cookie）；**没有 → 自动新增**。无需在服务器侧处理 Apple 强制登录/2FA，是最省事的续期方式。
 
-扩展源码在 `extension/` 目录（MV3）：
+📥 **直接下载 zip**：[`dist/icloud-hme-extension.zip`](https://raw.githubusercontent.com/17sho/icloud-hme-fixes/main/dist/icloud-hme-extension.zip)（解压后即源码）。也可查看 `extension/` 目录（MV3）：
 
 1. 打开 `chrome://extensions` → 开启右上角**开发者模式**
 2. 点「加载已解压的扩展程序」→ 选择 `extension/` 目录
