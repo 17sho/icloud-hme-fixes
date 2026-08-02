@@ -8,7 +8,7 @@ an iCloud Hide My Email multi-account management platform.
 
 ```
 ⚠️ COPYRIGHT NOTICE
-The upstream heartmore/icloud-hme has NO open-source license (all rights reserved).
+The upstream heartmore/icloud-hme declares MIT in its README but does not ship a separate LICENSE file; to avoid uncertainty from that incomplete form, this repository ships patches/docs only and includes no upstream source.
 This repository only provides patches and documentation against upstream — it does
 NOT redistribute upstream source code. Clone the upstream repo yourself first, then
 apply these patches.
@@ -149,8 +149,7 @@ addresses carries some risk:
 ## License
 
 - **This repository** (patches, docs, config samples): MIT, see [LICENSE](LICENSE)
-- **Upstream source** `heartmore/icloud-hme`: **no license, copyright held by the
-  original author**; this repository does not include upstream source
+- **Upstream source** `heartmore/icloud-hme`: declares MIT in its README but ships no LICENSE file; this repository includes no upstream source — refer to the upstream declaration for usage
 
 ---
 

@@ -8,7 +8,7 @@
 
 ```
 ⚠️ 版权声明
-上游 heartmore/icloud-hme 未附带开源许可证（默认保留版权）。
+上游 heartmore/icloud-hme 在 README 中声明为 MIT 许可，但未附带独立的 LICENSE 文件；为避免形式不完整带来的不确定性，本仓库仅发布补丁/文档，不包含上游源码。
 本仓库仅提供针对上游的补丁与文档，不重新分发上游源码。
 使用前请自行 clone 上游仓库，再应用本补丁。
 ```
@@ -143,7 +143,7 @@ Hide My Email 收件走 IMAP，需要单独的 **App 专用密码**：
 ## License
 
 - **本仓库**（补丁、文档、配置示例）：MIT，见 [LICENSE](LICENSE)
-- **上游源码** `heartmore/icloud-hme`：**无许可证，版权归原作者所有**，本仓库不包含上游源码
+- **上游源码** `heartmore/icloud-hme`：README 中声明为 MIT，但未附 LICENSE 文件；本仓库不包含上游源码，使用请参考上游声明
 
 ---
 
