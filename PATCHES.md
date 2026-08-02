@@ -19,7 +19,7 @@
 
 补丁文件：`patches/icloud-hme-fixes.patch`（标准 unified diff，`git apply` 可应用）
 
-共修复 **12 处问题**：
+共修复 **13 处问题**：
 
 ### 1. `account_manager.py` — 收件设置保存死锁
 
@@ -101,9 +101,9 @@
 
 | 文件 | 改动 |
 |---|---|
-| `account_manager.py` | +1 / -1（RLock） |
+| `account_manager.py` | +1 / -1（RLock）、新增 `upsert_account()`（约 30 行） |
 | `mail_cache.py` | +1 / -1（RLock） |
-| `web_ui.py` | 新增鉴权门（约 55 行）、路由拆分、Base URL 动态化、校验 API 修复、按钮反馈、cookie 友好提示、移动端精细适配（抽屉侧边栏 + 底部 Tab 栏） |
+| `web_ui.py` | 新增鉴权门（约 55 行）、路由拆分、Base URL 动态化、校验 API 修复、按钮反馈、cookie 友好提示、移动端精细适配（抽屉侧边栏）、`/api/accounts/upsert` 端点 |
 
 ## 变更统计（UX 增强部分，针对 `web_ui.py`）
 
@@ -161,6 +161,22 @@
 删除账号按钮（侧边栏账号项右侧的 `✕`）默认 `opacity:0`，仅 `:hover` 时显示。在触摸设备（手机）上无 hover，按钮**始终透明不可见**，看起来像「删除功能被删掉了」。
 
 **修复**：基础规则 `opacity:0` → `opacity:.6`，桌面与移动端均常显；hover 加深到 `1`。桌面与手机行为一致，删除入口随时可见可点。
+
+### 13. `account_manager.py` + `web_ui.py` — 一键导入 Cookie（upsert，同邮箱续期）+ 配套油猴脚本
+
+解决「在浏览器 iCloud 界面一键把当前登录会话同步到面板」的需求，配合油猴脚本 `scripts/icloud-hme-sync.user.js`：
+
+- 新增 `AccountManager.upsert_account(name, cookie_input, host)`：先校验 cookie 识别账号身份（`real_email`），再**按邮箱查重**——面板已有同邮箱账号则**续期**（更新 cookie，复用 `renew_account` 的「校验成功才写回」安全逻辑），否则**新增**
+- 新增 `POST /api/accounts/upsert` 端点，body `{"name","cookie_input","host"}`，返回 `{ok, action: "renew"|"add", id, real_email, alias_total, alias_active}`
+- API 文档页新增该端点的说明条目
+
+**配套油猴脚本**（`scripts/icloud-hme-sync.user.js`）：在 `*.icloud.com` 页面显示一个浮动按钮，点击展开面板，填入「面板域名 + 管理员密码」，点「一键导入/续期」即：
+1. 用 `GM_cookie` 读取当前浏览器已登录的 iCloud 会话 cookie（含 httpOnly）
+2. 组装成 `name=value; ...` 格式（保留全部 `X-APPLE-*` 会话 cookie）
+3. 调面板 `/login` 换取 session，再调 `/api/accounts/upsert` 导入——同邮箱自动续期、新邮箱自动新增
+4. 显示导入结果（续期/新增 + 邮箱 + 别名数）
+
+> 脚本利用**浏览器当前已登录的 iCloud 会话**，无需在服务器侧处理 Apple 强制登录/2FA，是最省事的续期路径。
 
 ## 如何应用补丁
 

@@ -24,7 +24,7 @@ Flask web panel: import iCloud cookies, manage multiple accounts and aliases, sc
 bulk alias creation, and receive mail over IMAP.
 
 While deploying the upstream project to a production/public environment and actually
-using the "inbox" feature, we found and fixed **12 real issues**, including **2 deadlocks
+using the "inbox" feature, we found and fixed **13 real issues**, including **2 deadlocks
 that hard-freeze the panel**. This repo packages those fixes as a reusable patch plus
 deployment docs.
 
@@ -44,6 +44,7 @@ deployment docs.
 | 10 | `account_manager.py` + `web_ui.py` | Cumbersome manual cookie refresh → added a "Renew" button and `POST /api/accounts/<id>/renew` endpoint (validate first, write back only on success, bad cookie doesn't clobber the old value) | 🟠 Functional |
 | 11 | `web_ui.py` | Mobile inbox header overflowed & the bottom tab bar duplicated the sidebar → inbox controls wrap/resize on mobile, removed the bottom tab bar in favor of hamburger-sidebar nav | 🟢 UX |
 | 12 | `web_ui.py` | Delete-account button was `opacity:0` shown only on hover → invisible on touch devices (looks like the feature vanished) → now always visible on desktop & mobile (opacity .6, hover deepens to 1) | 🟢 UX |
+| 13 | `account_manager.py` + `web_ui.py` | One-click cookie import with dedup (upsert) — same email auto-renews, new email auto-adds — plus a companion Tampermonkey script `scripts/icloud-hme-sync.user.js` (sync the current logged-in session to the panel right from the iCloud UI) | 🟠 Functional |
 
 Full details: [PATCHES.md](PATCHES.md).
 
@@ -89,6 +90,20 @@ Open http://127.0.0.1:5050 in a browser and log in with the admin password.
 Use the "Import Cookie" button (bottom-left of the panel) and paste a
 [Cookie Editor](https://cookie-editor.cgagnier.ca/) export as **Header String** or
 **JSON**. Each account keeps its own session.
+
+### 6. One-click import / auto-renew (Tampermonkey, patch #13)
+
+To skip the manual cookie copy, install the userscript `scripts/icloud-hme-sync.user.js`:
+
+1. Install the [Tampermonkey](https://www.tampermonkey.net/) extension
+2. Open `scripts/icloud-hme-sync.user.js` (or its raw URL); Tampermonkey will prompt to install
+3. In Tampermonkey settings, grant this script **cookie access (`GM_cookie`) for icloud.com**
+4. Open and **log in** to iCloud (https://www.icloud.com) → a ⇄ button appears bottom-right → expand the panel
+5. Enter the **panel base URL** (e.g. `https://hme.example.com`) and the **admin password**, then click "Import / Renew"
+
+The script reads your browser's **already-logged-in iCloud session** and syncs it to the
+panel: **an account with the same email auto-renews** (cookie updated); **a new email auto-adds**.
+No server-side Apple forced-login / 2FA handling — the easiest renewal path.
 
 ## Public deployment (recommended)
 
@@ -149,6 +164,8 @@ addresses carries some risk:
 ├── LICENSE            # MIT (this repo's patches/docs only)
 ├── patches/
 │   └── icloud-hme-fixes.patch   # full unified diff
+├── scripts/
+│   └── icloud-hme-sync.user.js  # Tampermonkey: one-click import/renew from iCloud (patch #13)
 ├── docs/              # extra docs
 └── deploy/            # systemd / Caddy samples
 ```
