@@ -162,21 +162,22 @@
 
 **修复**：基础规则 `opacity:0` → `opacity:.6`，桌面与移动端均常显；hover 加深到 `1`。桌面与手机行为一致，删除入口随时可见可点。
 
-### 13. `account_manager.py` + `web_ui.py` — 一键导入 Cookie（upsert，同邮箱续期）+ 配套油猴脚本
+### 13. `account_manager.py` + `web_ui.py` — 一键导入 Cookie（upsert，同邮箱续期）
 
-解决「在浏览器 iCloud 界面一键把当前登录会话同步到面板」的需求，配合油猴脚本 `scripts/icloud-hme-sync.user.js`：
+解决「在浏览器 iCloud 界面一键把当前登录会话同步到面板」的需求，配套 Chrome 扩展 `extension/`（读取 httpOnly cookie，比油猴脚本更可靠）：
 
 - 新增 `AccountManager.upsert_account(name, cookie_input, host)`：先校验 cookie 识别账号身份（`real_email`），再**按邮箱查重**——面板已有同邮箱账号则**续期**（更新 cookie，复用 `renew_account` 的「校验成功才写回」安全逻辑），否则**新增**
 - 新增 `POST /api/accounts/upsert` 端点，body `{"name","cookie_input","host"}`，返回 `{ok, action: "renew"|"add", id, real_email, alias_total, alias_active}`
 - API 文档页新增该端点的说明条目
 
-**配套油猴脚本**（`scripts/icloud-hme-sync.user.js`）：在 `*.icloud.com` 页面显示一个浮动按钮，点击展开面板，填入「面板域名 + 管理员密码」，点「一键导入/续期」即：
-1. 用 `GM_cookie` 读取当前浏览器已登录的 iCloud 会话 cookie（含 httpOnly）
+**配套 Chrome 扩展**（`extension/`，MV3）：在 `*.icloud.com` 页面显示一个可拖动的浮动面板，填入「面板域名 + 管理员密码」，点「同步」即：
+1. 用 `chrome.cookies` API 读取当前浏览器已登录的 iCloud 会话 cookie（**含 httpOnly**，`GM_cookie` 做不到）
 2. 组装成 `name=value; ...` 格式（保留全部 `X-APPLE-*` 会话 cookie）
-3. 调面板 `/login` 换取 session，再调 `/api/accounts/upsert` 导入——同邮箱自动续期、新邮箱自动新增
+3. 调 `/api/accounts/upsert` 导入——同邮箱自动续期、新邮箱自动新增
 4. 显示导入结果（续期/新增 + 邮箱 + 别名数）
 
-> 脚本利用**浏览器当前已登录的 iCloud 会话**，无需在服务器侧处理 Apple 强制登录/2FA，是最省事的续期路径。
+> **历史注记**：最初方案是油猴脚本 `scripts/icloud-hme-sync.user.js`（用 `GM_cookie`），但 `GM_cookie` 在部分版本/环境**读不到 httpOnly cookie**，导致抓不到关键会话 cookie，故已弃用并移除，改用 Chrome 扩展。
+> 同步逻辑利用**浏览器当前已登录的 iCloud 会话**，无需在服务器侧处理 Apple 强制登录/2FA，是最省事的续期路径。
 
 ### 14. `account_manager.py` + `web_ui.py` — 导入/添加时「账号名称」留空自动用邮箱名
 

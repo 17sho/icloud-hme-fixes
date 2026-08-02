@@ -44,7 +44,7 @@ deployment docs.
 | 10 | `account_manager.py` + `web_ui.py` | Cumbersome manual cookie refresh → added a "Renew" button and `POST /api/accounts/<id>/renew` endpoint (validate first, write back only on success, bad cookie doesn't clobber the old value) | 🟠 Functional |
 | 11 | `web_ui.py` | Mobile inbox header overflowed & the bottom tab bar duplicated the sidebar → inbox controls wrap/resize on mobile, removed the bottom tab bar in favor of hamburger-sidebar nav | 🟢 UX |
 | 12 | `web_ui.py` | Delete-account button was `opacity:0` shown only on hover → invisible on touch devices (looks like the feature vanished) → now always visible on desktop & mobile (opacity .6, hover deepens to 1) | 🟢 UX |
-| 13 | `account_manager.py` + `web_ui.py` | One-click cookie import with dedup (upsert) — same email auto-renews, new email auto-adds — plus a companion Tampermonkey script `scripts/icloud-hme-sync.user.js` (sync the current logged-in session to the panel right from the iCloud UI) | 🟠 Functional |
+| 13 | `account_manager.py` + `web_ui.py` | One-click cookie import with dedup (upsert) — same email auto-renews, new email auto-adds — plus a companion Chrome extension `extension/` (reads httpOnly cookies for one-click sync) | 🟠 Functional |
 | 14 | `account_manager.py` + `web_ui.py` | When adding/importing an account with an empty name, the backend falls back to the email address instead of saving as "Untitled account" (naming rule: empty = email name, filled = what you type) | 🟢 UX |
 | 15 | `web_ui.py` | Couldn't rename an account in the panel → new "Edit" button + `POST /api/accounts/<id>/edit` endpoint (supports direct `admin_password` auth) with a rename modal | 🟠 Functional |
 | 16 | `web_ui.py` | Email list only showed locally-created records and didn't match the dashboard/cloud aliases → `/api/emails` now uses cloud aliases as the authoritative source (real-time fetch + local fallback, dedup/merge), so the list is complete on load | 🟠 Functional |
@@ -94,25 +94,12 @@ Use the "Import Cookie" button (bottom-left of the panel) and paste a
 [Cookie Editor](https://cookie-editor.cgagnier.ca/) export as **Header String** or
 **JSON**. Each account keeps its own session.
 
-### 6. One-click import / auto-renew (Tampermonkey, patch #13)
+### 6. One-click import / auto-renew (Chrome extension, recommended)
 
-To skip the manual cookie copy, install the userscript `scripts/icloud-hme-sync.user.js`:
-
-1. Install the [Tampermonkey](https://www.tampermonkey.net/) extension
-2. Open `scripts/icloud-hme-sync.user.js` (or its raw URL); Tampermonkey will prompt to install
-3. In Tampermonkey settings, grant this script **cookie access (`GM_cookie`) for icloud.com**
-4. Open and **log in** to iCloud (https://www.icloud.com) → a ⇄ button appears bottom-right → expand the panel
-5. Enter the **panel base URL** (e.g. `https://hme.example.com`) and the **admin password**, then click "Import / Renew"
-
-The script reads your browser's **already-logged-in iCloud session** and syncs it to the
-panel: **an account with the same email auto-renews** (cookie updated); **a new email auto-adds**.
-No server-side Apple forced-login / 2FA handling — the easiest renewal path.
-
-### 6.1 One-click import / auto-renew (Chrome extension, recommended)
-
-> The Tampermonkey script relies on `GM_cookie`, which **cannot read httpOnly cookies** in some
-> versions — it may miss key session cookies. Prefer the **Chrome extension** in `extension/`,
-> which reads **httpOnly** cookies via the `chrome.cookies` API.
+Reads your browser's **already-logged-in iCloud session httpOnly cookies** via the
+`chrome.cookies` API and syncs them to the panel: **an account with the same email
+auto-renews** (cookie updated); **a new email auto-adds**. No server-side Apple forced-login /
+2FA handling — the easiest renewal path.
 
 Source lives in `extension/` (MV3):
 
@@ -120,9 +107,6 @@ Source lives in `extension/` (MV3):
 2. Click **"Load unpacked"** → select the `extension/` directory
 3. Open and **log in** to iCloud → a ⇄ button appears → expand the panel
 4. Enter the **panel base URL** (e.g. `https://hme.example.com`) and the **admin password**, then click "Sync"
-
-Same idea as the userscript: read the current iCloud session's httpOnly cookies → call the
-panel's `/api/accounts/upsert` → same email auto-renews, new email auto-adds.
 
 > **Note**: the extension's `host_permissions` uses `<all_urls>` so it can sync to any HTTPS
 > panel. If you only connect to your own panel, tighten `<all_urls>` in `manifest.json` to your
@@ -187,8 +171,6 @@ addresses carries some risk:
 ├── LICENSE            # MIT (this repo's patches/docs only)
 ├── patches/
 │   └── icloud-hme-fixes.patch   # full unified diff
-├── scripts/
-│   └── icloud-hme-sync.user.js  # Tampermonkey: one-click import/renew from iCloud (patch #13)
 ├── extension/          # Chrome extension (MV3): reads httpOnly cookies, one-click sync (recommended)
 │   ├── manifest.json
 │   ├── background.js
