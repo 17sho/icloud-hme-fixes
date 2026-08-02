@@ -104,6 +104,21 @@ python web_ui.py --scheduler    # 启动时自动开启调度器
 **面板已有相同邮箱账号 → 自动续期**（更新 Cookie）；**没有 → 自动新增**。
 无需在服务器侧处理 Apple 强制登录/2FA，是最省事的续期方式。
 
+### 6.1 一键导入 / 自动续期（Chrome 扩展，推荐）
+
+> 油猴脚本的 `GM_cookie` **读不到 httpOnly cookie**（部分版本有缺陷），会导致抓不到关键会话 cookie。推荐改用同目录下的 **Chrome 扩展**：通过 `chrome.cookies` API 可读取 **httpOnly** cookie，更可靠。
+
+扩展源码在 `extension/` 目录（MV3）：
+
+1. 打开 `chrome://extensions` → 开启右上角**开发者模式**
+2. 点「加载已解压的扩展程序」→ 选择 `extension/` 目录
+3. 打开并**登录** iCloud → 页面出现 ⇄ 按钮 → 展开面板
+4. 填入**面板域名**（如 `https://hme.example.com`）和**管理员密码**，点「同步」
+
+原理与油猴脚本一致：读取浏览器当前 iCloud 会话的 httpOnly cookie → 调面板 `/api/accounts/upsert` → 同邮箱自动续期、新邮箱自动新增。
+
+> **注意**：扩展的 `host_permissions` 使用 `<all_urls>`，可同步到任意 HTTPS 面板域名。若你只连自己的面板，可在 `manifest.json` 的 `host_permissions` 里把 `<all_urls>` 收紧为你的面板域名（如 `*://hme.example.com/*`）以减少权限。
+
 ## 部署到公网（推荐）
 
 不要直接把 `web_ui.py` 绑到公网。推荐用反向代理 + systemd 守护进程，
@@ -163,6 +178,10 @@ Hide My Email 收件走 IMAP，需要单独的 **App 专用密码**：
 │   └── icloud-hme-fixes.patch   # 完整 unified diff
 ├── scripts/
 │   └── icloud-hme-sync.user.js  # 油猴脚本：iCloud 界面一键导入/续期（补丁 #13）
+├── extension/          # Chrome 扩展（MV3）：读取 httpOnly cookie 一键同步（推荐）
+│   ├── manifest.json
+│   ├── background.js
+│   └── content.js
 ├── docs/              # 补充文档
 └── deploy/            # systemd / Caddy 配置示例
 ```

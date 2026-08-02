@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "iCloud HME Sync",
+  "version": "1.0.0",
+  "description": "读取 iCloud 登录会话 Cookie（含 httpOnly）并一键同步到 iCloud HME 面板（同邮箱自动续期，新邮箱自动新增）",
+  "permissions": ["cookies", "storage"],
+  "host_permissions": [
+    "*://*.icloud.com/*",
+    "*://*.icloud.com.cn/*",
+    "*://*.appleid.com.cn/*",
+    "*://*.apple.com.cn/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.icloud.com/*",
+        "*://*.icloud.com.cn/*",
+        "*://*.appleid.com.cn/*",
+        "*://*.apple.com.cn/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "iCloud HME Sync"
+  }
+}

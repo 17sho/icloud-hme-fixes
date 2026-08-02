@@ -108,6 +108,26 @@ The script reads your browser's **already-logged-in iCloud session** and syncs i
 panel: **an account with the same email auto-renews** (cookie updated); **a new email auto-adds**.
 No server-side Apple forced-login / 2FA handling — the easiest renewal path.
 
+### 6.1 One-click import / auto-renew (Chrome extension, recommended)
+
+> The Tampermonkey script relies on `GM_cookie`, which **cannot read httpOnly cookies** in some
+> versions — it may miss key session cookies. Prefer the **Chrome extension** in `extension/`,
+> which reads **httpOnly** cookies via the `chrome.cookies` API.
+
+Source lives in `extension/` (MV3):
+
+1. Open `chrome://extensions` → enable **Developer mode** (top-right)
+2. Click **"Load unpacked"** → select the `extension/` directory
+3. Open and **log in** to iCloud → a ⇄ button appears → expand the panel
+4. Enter the **panel base URL** (e.g. `https://hme.example.com`) and the **admin password**, then click "Sync"
+
+Same idea as the userscript: read the current iCloud session's httpOnly cookies → call the
+panel's `/api/accounts/upsert` → same email auto-renews, new email auto-adds.
+
+> **Note**: the extension's `host_permissions` uses `<all_urls>` so it can sync to any HTTPS
+> panel. If you only connect to your own panel, tighten `<all_urls>` in `manifest.json` to your
+> panel host (e.g. `*://hme.example.com/*`) to reduce the permission footprint.
+
 ## Public deployment (recommended)
 
 Do **not** bind `web_ui.py` directly to the public internet. Use a reverse proxy plus a
@@ -169,6 +189,10 @@ addresses carries some risk:
 │   └── icloud-hme-fixes.patch   # full unified diff
 ├── scripts/
 │   └── icloud-hme-sync.user.js  # Tampermonkey: one-click import/renew from iCloud (patch #13)
+├── extension/          # Chrome extension (MV3): reads httpOnly cookies, one-click sync (recommended)
+│   ├── manifest.json
+│   ├── background.js
+│   └── content.js
 ├── docs/              # extra docs
 └── deploy/            # systemd / Caddy samples
 ```
