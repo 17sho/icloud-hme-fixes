@@ -1,0 +1,22 @@
+# Upstream source (not redistributed here) — clone it yourself
+# icloud_hme.py
+# account_manager.py
+# web_ui.py
+# mail_cache.py
+# scheduler.py
+# requirements.txt
+
+# Runtime / secrets — never commit
+accounts.json
+.secret_key
+.env
+.env.*
+*.env
+results/
+logs/
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.bak*
+.DS_Store
