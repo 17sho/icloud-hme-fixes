@@ -24,7 +24,7 @@ Flask web panel: import iCloud cookies, manage multiple accounts and aliases, sc
 bulk alias creation, and receive mail over IMAP.
 
 While deploying the upstream project to a production/public environment and actually
-using the "inbox" feature, we found and fixed **11 real issues**, including **2 deadlocks
+using the "inbox" feature, we found and fixed **12 real issues**, including **2 deadlocks
 that hard-freeze the panel**. This repo packages those fixes as a reusable patch plus
 deployment docs.
 
@@ -43,6 +43,7 @@ deployment docs.
 | 9 | `web_ui.py` | Poor mobile layout → removed the desktop `min-width:1040px` lock, added mobile-first layout (sidebar drawer + single-column cards + full-screen modal) | 🟢 UX |
 | 10 | `account_manager.py` + `web_ui.py` | Cumbersome manual cookie refresh → added a "Renew" button and `POST /api/accounts/<id>/renew` endpoint (validate first, write back only on success, bad cookie doesn't clobber the old value) | 🟠 Functional |
 | 11 | `web_ui.py` | Mobile inbox header overflowed & the bottom tab bar duplicated the sidebar → inbox controls wrap/resize on mobile, removed the bottom tab bar in favor of hamburger-sidebar nav | 🟢 UX |
+| 12 | `web_ui.py` | Delete-account button was `opacity:0` shown only on hover → invisible on touch devices (looks like the feature vanished) → now always visible on desktop & mobile (opacity .6, hover deepens to 1) | 🟢 UX |
 
 Full details: [PATCHES.md](PATCHES.md).
 
