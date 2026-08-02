@@ -24,7 +24,7 @@ Flask web panel: import iCloud cookies, manage multiple accounts and aliases, sc
 bulk alias creation, and receive mail over IMAP.
 
 While deploying the upstream project to a production/public environment and actually
-using the "inbox" feature, we found and fixed **5 real issues**, including **2 deadlocks
+using the "inbox" feature, we found and fixed **8 real issues**, including **2 deadlocks
 that hard-freeze the panel**. This repo packages those fixes as a reusable patch plus
 deployment docs.
 
@@ -37,6 +37,9 @@ deployment docs.
 | 3 | `web_ui.py` | Stacked Flask route decorators → Python syntax error | 🔴 Critical |
 | 4 | `web_ui.py` | No authentication → anyone can access a public deployment | 🟡 Security |
 | 5 | `web_ui.py` | API docs Base URL hard-coded to localhost | 🟢 UX |
+| 6 | `web_ui.py` | Validate API false positive — expired cookie still shows "valid" | 🟠 Functional |
+| 7 | `web_ui.py` | Unfriendly expired-cookie errors → `friendlyErr()` shows "⚠️ Cookie expired" directly | 🟢 UX |
+| 8 | `web_ui.py` | No feedback on refresh/cloud-sync/CSV buttons → added `btnLoading` feedback & anti-double-click | 🟢 UX |
 
 Full details: [PATCHES.md](PATCHES.md).
 

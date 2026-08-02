@@ -19,7 +19,7 @@
 
 补丁文件：`patches/icloud-hme-fixes.patch`（标准 unified diff，`git apply` 可应用）
 
-共修复 **5 处问题**：
+共修复 **8 处问题**：
 
 ### 1. `account_manager.py` — 收件设置保存死锁
 
@@ -103,7 +103,39 @@
 |---|---|
 | `account_manager.py` | +1 / -1（RLock） |
 | `mail_cache.py` | +1 / -1（RLock） |
-| `web_ui.py` | 新增鉴权门（约 55 行）、路由拆分、Base URL 动态化 |
+| `web_ui.py` | 新增鉴权门（约 55 行）、路由拆分、Base URL 动态化、校验 API 修复、按钮反馈、cookie 友好提示 |
+
+## 变更统计（UX 增强部分，针对 `web_ui.py`）
+
+| 改动 | 说明 |
+|---|---|
+| `friendlyErr()` | 新增错误友好化函数：匹配 `/421|expired\|invalid\|session\|cookie\|未登录\|403/i` 时返回「⚠️ Cookie 已过期」，否则截断 40 字符显示原文 |
+| 校验 API | `api_validate_account` 改为按 `account["status"]=="active"` 判断 ok，修复「cookie 已过期却显示校验成功」误报 |
+| 按钮反馈 | 新增 `btnLoading(id,on,text)`；刷新/邮箱刷新/云端同步/CSV 导出带操作反馈与防连点 |
+
+### 6. `web_ui.py` — 校验 API 误报修复
+
+**症状**：账号 cookie 已过期，点「校验」仍显示「校验通过」。
+
+**根因**：`account_manager.validate_account()` 用 `try/except` 全捕获，过期仅置
+`status="error"` 永不抛异常；而 `api_validate_account` 只检查「是否抛异常」→
+永远返回 `ok:true` → 前端永远「校验通过」。
+
+**修复**：按 `account["status"]=="active"` 判断真实结果，否则返回 `ok:false` + 错误信息。
+
+### 7. `web_ui.py` — Cookie 过期友好提示
+
+账号卡片状态徽标与校验失败 toast 改用 `friendlyErr()`，遇到
+`421/expired/invalid/session/cookie/未登录/403` 直接提示「⚠️ Cookie 已过期」，
+替代裸显 `HTTP 421: {...}` 长串。
+
+### 8. `web_ui.py` — 按钮操作反馈
+
+新增 `btnLoading(id,on,text)` 辅助函数（禁用+文本切换+防连点），为以下按钮加反馈：
+- 「刷新」→ 完成后「已刷新」/ 失败「刷新失败」（仅手动点击时，自动刷新不弹）
+- 邮箱「刷新」→「邮箱已刷新 (N)」
+- 「云端同步」→ 加载中「同步中...」+ 完成「云端同步完成 (N 个已更新)」/ 失败红 toast
+- 「CSV」→「已导出 N 个」
 
 ## 如何应用补丁
 
