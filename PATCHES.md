@@ -19,7 +19,7 @@
 
 补丁文件：`patches/icloud-hme-fixes.patch`（标准 unified diff，`git apply` 可应用）
 
-共修复 **8 处问题**：
+共修复 **9 处问题**：
 
 ### 1. `account_manager.py` — 收件设置保存死锁
 
@@ -103,7 +103,7 @@
 |---|---|
 | `account_manager.py` | +1 / -1（RLock） |
 | `mail_cache.py` | +1 / -1（RLock） |
-| `web_ui.py` | 新增鉴权门（约 55 行）、路由拆分、Base URL 动态化、校验 API 修复、按钮反馈、cookie 友好提示 |
+| `web_ui.py` | 新增鉴权门（约 55 行）、路由拆分、Base URL 动态化、校验 API 修复、按钮反馈、cookie 友好提示、移动端精细适配（抽屉侧边栏 + 底部 Tab 栏） |
 
 ## 变更统计（UX 增强部分，针对 `web_ui.py`）
 
