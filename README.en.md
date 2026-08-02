@@ -24,7 +24,7 @@ Flask web panel: import iCloud cookies, manage multiple accounts and aliases, sc
 bulk alias creation, and receive mail over IMAP.
 
 While deploying the upstream project to a production/public environment and actually
-using the "inbox" feature, we found and fixed **9 real issues**, including **2 deadlocks
+using the "inbox" feature, we found and fixed **11 real issues**, including **2 deadlocks
 that hard-freeze the panel**. This repo packages those fixes as a reusable patch plus
 deployment docs.
 
@@ -40,7 +40,9 @@ deployment docs.
 | 6 | `web_ui.py` | Validate API false positive — expired cookie still shows "valid" | 🟠 Functional |
 | 7 | `web_ui.py` | Unfriendly expired-cookie errors → `friendlyErr()` shows "⚠️ Cookie expired" directly | 🟢 UX |
 | 8 | `web_ui.py` | No feedback on refresh/cloud-sync/CSV buttons → added `btnLoading` feedback & anti-double-click | 🟢 UX |
-| 9 | `web_ui.py` | Poor mobile layout → removed the desktop `min-width:1040px` lock, added mobile-first layout (sidebar drawer + bottom tab bar + single-column cards + full-screen modal) | 🟢 UX |
+| 9 | `web_ui.py` | Poor mobile layout → removed the desktop `min-width:1040px` lock, added mobile-first layout (sidebar drawer + single-column cards + full-screen modal) | 🟢 UX |
+| 10 | `account_manager.py` + `web_ui.py` | Cumbersome manual cookie refresh → added a "Renew" button and `POST /api/accounts/<id>/renew` endpoint (validate first, write back only on success, bad cookie doesn't clobber the old value) | 🟠 Functional |
+| 11 | `web_ui.py` | Mobile inbox header overflowed & the bottom tab bar duplicated the sidebar → inbox controls wrap/resize on mobile, removed the bottom tab bar in favor of hamburger-sidebar nav | 🟢 UX |
 
 Full details: [PATCHES.md](PATCHES.md).
 
