@@ -45,6 +45,9 @@ deployment docs.
 | 11 | `web_ui.py` | Mobile inbox header overflowed & the bottom tab bar duplicated the sidebar → inbox controls wrap/resize on mobile, removed the bottom tab bar in favor of hamburger-sidebar nav | 🟢 UX |
 | 12 | `web_ui.py` | Delete-account button was `opacity:0` shown only on hover → invisible on touch devices (looks like the feature vanished) → now always visible on desktop & mobile (opacity .6, hover deepens to 1) | 🟢 UX |
 | 13 | `account_manager.py` + `web_ui.py` | One-click cookie import with dedup (upsert) — same email auto-renews, new email auto-adds — plus a companion Tampermonkey script `scripts/icloud-hme-sync.user.js` (sync the current logged-in session to the panel right from the iCloud UI) | 🟠 Functional |
+| 14 | `account_manager.py` + `web_ui.py` | When adding/importing an account with an empty name, the backend falls back to the email address instead of saving as "Untitled account" (naming rule: empty = email name, filled = what you type) | 🟢 UX |
+| 15 | `web_ui.py` | Couldn't rename an account in the panel → new "Edit" button + `POST /api/accounts/<id>/edit` endpoint (supports direct `admin_password` auth) with a rename modal | 🟠 Functional |
+| 16 | `web_ui.py` | Email list only showed locally-created records and didn't match the dashboard/cloud aliases → `/api/emails` now uses cloud aliases as the authoritative source (real-time fetch + local fallback, dedup/merge), so the list is complete on load | 🟠 Functional |
 
 Full details: [PATCHES.md](PATCHES.md).
 

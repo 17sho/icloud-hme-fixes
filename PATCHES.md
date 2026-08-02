@@ -101,9 +101,9 @@
 
 | 文件 | 改动 |
 |---|---|
-| `account_manager.py` | +1 / -1（RLock）、新增 `upsert_account()`（约 30 行） |
+| `account_manager.py` | +1 / -1（RLock）、新增 `upsert_account()`（约 30 行）、`upsert_account` 名称兜底（留空自动用邮箱名） |
 | `mail_cache.py` | +1 / -1（RLock） |
-| `web_ui.py` | 新增鉴权门（约 55 行）、路由拆分、Base URL 动态化、校验 API 修复、按钮反馈、cookie 友好提示、移动端精细适配（抽屉侧边栏）、`/api/accounts/upsert` 端点 |
+| `web_ui.py` | 新增鉴权门（约 55 行）、路由拆分、Base URL 动态化、校验 API 修复、按钮反馈、cookie 友好提示、移动端精细适配（抽屉侧边栏）、`/api/accounts/upsert` 端点、`/api/accounts/<id>/edit` 编辑端点 + 前端编辑按钮/改名弹窗、`/api/emails` 合并云端完整别名 |
 
 ## 变更统计（UX 增强部分，针对 `web_ui.py`）
 
@@ -177,6 +177,29 @@
 4. 显示导入结果（续期/新增 + 邮箱 + 别名数）
 
 > 脚本利用**浏览器当前已登录的 iCloud 会话**，无需在服务器侧处理 Apple 强制登录/2FA，是最省事的续期路径。
+
+### 14. `account_manager.py` + `web_ui.py` — 导入/添加时「账号名称」留空自动用邮箱名
+
+解决「面板新增/续期账号时，名称字段留空会存成『未命名账号』，列表显示不友好」的问题：
+
+- `upsert_account()`（及 `add_account` 路径）在**后端统一处理名称兜底**：名称留空时自动取 `real_email`（`appleId`/`primaryEmail`）作为账号名，空则报「无法从 cookie 识别账号邮箱」
+- `web_ui.py` 两个端点（`/api/accounts/add`、`/api/accounts/upsert`）的 `name` 默认值由 `"未命名账号"` 改为空串透传，交由后端兜底
+- 命名规则「**不填=邮箱名，填了=填的内容**」，扩展脚本与面板调用统一生效
+
+### 15. `web_ui.py` — 面板「编辑账号」功能
+
+新增在面板直接修改账号名称的能力，无需改代码/改文件：
+
+- 新增 `POST /api/accounts/<acc_id>/edit` 端点，body `{"name": "新名称"}`，调 `update_account()` 改名称，返回 `{ok, name, real_email}`
+- 鉴权：`_require_auth` 对该端点（正则路径匹配）与 `/api/accounts/upsert` 一样支持 `admin_password` 直接鉴权，可跨域直连（无需先登录拿 session）
+- 前端：账号卡片新增「编辑」按钮，点击弹出改名弹窗（`showEditModal`/`saveEditAccount`），保存后刷新
+
+### 16. `web_ui.py` — 邮箱列表合并云端完整别名
+
+解决「邮箱列表只有本地创建记录、和仪表盘/云端别名对不上」的问题：
+
+- `/api/emails` 端点改为**以云端完整别名为主数据源**：先调 `get_all_aliases()` 拉取所有账号的 iCloud 实时别名（含 label/active/所属账号），再补充本地 `latest_emails.txt` 里云端暂未出现的邮箱（去重合并）
+- 列表打开即显示全部云端别名，不再只是「通过本面板创建」的那几条；返回 `source: "cloud+local"` 便于识别
 
 ## 如何应用补丁
 

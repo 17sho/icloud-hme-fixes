@@ -42,6 +42,9 @@ Cookie、管理多个账号与别名、定时批量创建隐私邮箱、并通�
 | 11 | `web_ui.py` | 手机端收件箱头部一行元素横溢撑破布局 + 底部 Tab 栏与侧边栏功能重复 → 收件箱控件可换行自适应，手机端移除底部 Tab 栏统一用汉堡侧边栏导航 | 🟢 体验改进 |
 | 12 | `web_ui.py` | 删除账号按钮默认 `opacity:0` 仅 hover 显示，手机上无 hover 完全不可见（像功能被删掉）→ 改为桌面/手机端常显（opacity .6，hover 加深到 1） | 🟢 体验改进 |
 | 13 | `account_manager.py` + `web_ui.py` | 一键导入 Cookie 去重（upsert）——同邮箱自动续期、新邮箱自动新增 + 配套油猴脚本 `scripts/icloud-hme-sync.user.js`（在 iCloud 界面一键把当前登录会话同步到面板） | 🟠 功能性 |
+| 14 | `account_manager.py` + `web_ui.py` | 添加/导入账号时「名称」留空 → 后端自动用邮箱名，不再存成「未命名账号」（命名规则：不填=邮箱名，填了=填的内容） | 🟢 体验改进 |
+| 15 | `web_ui.py` | 面板不能直接改账号名 → 新增「编辑」按钮 + `POST /api/accounts/<id>/edit` 端点（支持 `admin_password` 直接鉴权），改名弹窗即改即存 | 🟠 功能性 |
+| 16 | `web_ui.py` | 邮箱列表只有本地创建记录、和仪表盘/云端别名对不上 → `/api/emails` 改为以云端完整别名为主数据源（实时拉取+本地补充去重合并），列表打开即完整 | 🟠 功能性 |
 
 完整说明见 [PATCHES.md](PATCHES.md)。
 
