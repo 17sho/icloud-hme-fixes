@@ -1,11 +1,20 @@
 # iCloud HME — Patch Set
 
-> English: [README.en.md](README.en.md) · 中文：[README.md](README.md)
+> **English**: [README.en.md](README.en.md) · 中文：[README.md](README.md)
 
-This repository is **not the complete application source**. It is a **patch set +
-deployment docs** for [heartmore/icloud-hme](https://github.com/heartmore/icloud-hme),
-an iCloud Hide My Email multi-account management platform.
+> ### 🚀 Want it ready-to-deploy? Use the complete build!
+>
+> If you'd rather skip "clone upstream → apply patches", use the **complete enhanced
+> repository** — all 16 fixes built in, plus a Chrome extension and deploy samples, clone & go:
+>
+> 🔗 **https://github.com/17sho/icloud-hme-full**
+>
+> This repo (the patch set) is its build source; both offer the same features — pick one.
 
+This repository is **not the full application source**. It is a
+**fix patch set + deployment docs** for
+[heartmore/icloud-hme](https://github.com/heartmore/icloud-hme) (iCloud Hide My Email
+multi-account management platform).
 ```
 ⚠️ COPYRIGHT NOTICE
 The upstream heartmore/icloud-hme declares MIT in its README but does not ship a separate LICENSE file; to avoid uncertainty from that incomplete form, this repository ships patches/docs only and includes no upstream source.

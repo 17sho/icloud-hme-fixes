@@ -2,6 +2,14 @@
 
 > **English**: [README.en.md](README.en.md) · 中文：[README.md](README.md)
 
+> ### 🚀 想要一步到位？用完整可部署版！
+>
+> 如果你不想「clone 上游 → 打补丁」，可直接使用 **完整增强版仓库**，所有 16 项修复已内置、附带 Chrome 扩展与部署配置，clone 即用：
+>
+> 🔗 **https://github.com/17sho/icloud-hme-full**
+>
+> 本仓库（修复补丁集）是它的构建来源；两者功能一致，二选一即可。
+
 本仓库 **不是完整的应用源码**，而是针对
 [heartmore/icloud-hme](https://github.com/heartmore/icloud-hme)（iCloud Hide My Email
 多账号管理平台）的 **修复补丁集 + 部署文档**。
